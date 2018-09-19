@@ -11,6 +11,7 @@ class FormController extends EventEmitter {
     this.touched = new ObjectMap();
     this.errors = new ObjectMap();
     this.submits = 0;
+    this.submitting = false;
     this.asyncErrors = new ObjectMap();
     this.api = {
       setValue: this.setValue,
@@ -47,7 +48,8 @@ class FormController extends EventEmitter {
       pristine: this.pristine,
       dirty: this.dirty,
       invalid: this.invalid,
-      submits: this.submits
+      submits: this.submits,
+      submitting: this.submitting
     };
   }
 
@@ -302,7 +304,13 @@ class FormController extends EventEmitter {
         this.emit('update', this.state);
       }
       if (this.hooks.onSubmit) {
-        this.hooks.onSubmit(JSON.parse(JSON.stringify(this.state.values)));
+        this.submitting = true;
+        this.emit('change', this.state);
+        this.emit('update', this.state);
+        await Promise.resolve(this.hooks.onSubmit(JSON.parse(JSON.stringify(this.state.values))));
+        this.submitting = false;
+        this.emit('change', this.state);
+        this.emit('update', this.state);
       }
     } else {
       if (this.hooks.onSubmitFailure) {

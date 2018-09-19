@@ -96,7 +96,8 @@ describe('Controller', () => {
           pristine: false,
           dirty: true,
           invalid: true,
-          submits: 0
+          submits: 0,
+          submitting: false
         };
         controller.api.setState(expected);
         expect(controller.state).to.deep.equal(expected);
@@ -167,7 +168,8 @@ describe('Controller', () => {
           pristine: false,
           dirty: true,
           invalid: false,
-          submits: 0
+          submits: 0,
+          submitting: false
         };
         controller.register(
           'greeting',
@@ -200,7 +202,8 @@ describe('Controller', () => {
           pristine: false,
           dirty: true,
           invalid: false,
-          submits: 0
+          submits: 0,
+          submitting: false
         };
         controller.register(
           'greeting',

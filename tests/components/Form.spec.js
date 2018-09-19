@@ -35,7 +35,8 @@ describe('Form', () => {
       pristine: true,
       dirty: false,
       invalid: false,
-      submits: 0
+      submits: 0,
+      submitting: false
     };
     expect(JSON.stringify(state)).to.deep.equal(JSON.stringify(formState));
   };
@@ -49,7 +50,8 @@ describe('Form', () => {
       pristine: true,
       dirty: false,
       invalid: false,
-      submits: 0
+      submits: 0,
+      submitting: false
     };
     return Object.assign({}, defaultState, state);
   };
@@ -163,6 +165,36 @@ describe('Form', () => {
       expect(savedApi.getState().values).to.deep.equal({ greeting: 'hello' });
       done();
     });
+  });
+  
+  it('onSubmit function should set submitting state to true', done => {
+    let savedApi;
+    
+    const onSubmit = () => new Promise((resolve, reject) => {
+      let state = savedApi.getState();
+      expect(state.submitting).to.be.true;
+      resolve();
+      setImmediate(() => {
+        state = savedApi.getState();
+        expect(state.submitting).to.be.false;
+        done();
+      });
+    });
+    
+    const wrapper = mount(
+      <Form
+        onSubmit={onSubmit}
+        getApi={api => {
+          savedApi = api;
+        }}>
+        <Text field="greeting" />
+        <button type="submit">Submit</button>
+      </Form>
+    );
+    const input = wrapper.find('input');
+    input.simulate('change', { target: { value: 'hello' } });
+    const button = wrapper.find('button');
+    button.simulate('submit');
   });
 
   it('should call reset function when reset button is clicked', done => {
